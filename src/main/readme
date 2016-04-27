@@ -1,0 +1,13 @@
+Sends 2 messages
+
+register: { "deviceType": "", "company": "", "userId": "a353f7c4-884f-4c05-b6ad-2d11d68ea19d", "locationId": "", "userName": "", "locationName": "", "type": "rtRegister", "managerChannel": "", "deviceId": "d2b11e54-0633-4df4-82a9-f9622f4710bd", "listenChannel": "rxChannel", "version": "1.0" }
+
+the ta Report: [ { "nearEndMaxDb": 22, "farEndDuration": 600, "timePeriod": 2000, "nearEndDuration": 400, "noTalkDuration": 840, "eventTime": 1447094100210, "type": "caReport", "farEndMaxDb": 23, "overTalkDuration": 160, "deviceId": "6c690414-2691-4238-99b6-1436ebe704a8", "version": "1.0" } ]
+
+runtime options: -help : help menu -user : user id [Random UUID] -device : device id [Random UUID] -send : send channel [demo] -listen : listen channel [Random UUID] -pub : publish key -sub : subscribe key -profile : profile [random]/over_talk/remote_talk/near_talk -time : time between events in ms. [200] -num : the number of clients to spin off [1]
+
+example ussage: (specified channels, pubnub keys and the time between messages at 2s vs the default 200 ms)
+
+java -cp "lib/*.jar" com.plantronics.NearRealtimeTestClient -listen rxChannel -send txChannel -time 2000 -pub "demo" -sub "demo"
+
+you can login to pubnub and use their debug console and see the messages + send a message back.

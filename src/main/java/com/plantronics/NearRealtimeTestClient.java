@@ -28,7 +28,7 @@ public class NearRealtimeTestClient {
             int timeBetweenEvents = 200;
             int numClients = 1;
 
-            String sendWith = "tcp";
+            String sendWith = "pubnub";
             String host = "localhost";
             int port = 9999;
 

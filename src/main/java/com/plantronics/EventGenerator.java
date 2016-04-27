@@ -73,9 +73,9 @@ public class EventGenerator implements Runnable {
     public void run() {
 
         try {
-            sendDeviceReg();
+//            sendDeviceReg();
             while (running) {
-                sendCallStart();
+//                sendCallStart();
                 for (int i=0; i < numEvents; i++) {
                     try {
                         Thread.sleep(timeBetweenEvents);
@@ -84,11 +84,11 @@ public class EventGenerator implements Runnable {
                     }
                     sendSoundEvent();
                 }
-                sendCallEnd();
+//                sendCallEnd();
                 int sleepTime = new Random().nextInt((2000 - 500) + 1) + 500;
                 Thread.sleep(sleepTime);
             }
-            sendDeviceDeReg();
+//            sendDeviceDeReg();
         } catch (Exception e) {
             running = false;
             e.printStackTrace();
@@ -167,7 +167,7 @@ public class EventGenerator implements Runnable {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("[{");
+        sb.append("{");
 
         sb.append("\"version\":\"");
         sb.append(version);
@@ -212,7 +212,7 @@ public class EventGenerator implements Runnable {
         sb.append("\"nearEndMaxDb\":");
         sb.append(soundEvent.getNearEndMaxDb());
 
-        sb.append("}]");
+        sb.append("}");
 
         eventPublisher.publish(sb.toString());
     }
