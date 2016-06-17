@@ -28,6 +28,13 @@ public class TCPEventPublisher implements EventPublisher {
         outToServer.writeBytes(message+"\n");
     }
 
+    @Override
+    public void publish(String message, String channel) throws Exception {
+        if (socket == null) throw  new Exception("no socket connected!");
+        DataOutputStream outToServer = new DataOutputStream(socket.getOutputStream());
+        outToServer.writeBytes(message+"\n");
+    }
+
 
     @Override
     public void destroy() {

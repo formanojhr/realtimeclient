@@ -8,6 +8,8 @@ public interface EventPublisher {
 
     public void publish(String message)  throws Exception ;
 
+    public void publish(String message,String channel)  throws Exception ;
+
     public void destroy();
 
 }

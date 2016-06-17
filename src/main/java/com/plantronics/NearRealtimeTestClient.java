@@ -2,18 +2,30 @@ package com.plantronics;
 
 import com.plantronics.impl.PubNubEventPublisher;
 import com.plantronics.impl.TCPEventPublisher;
+import com.plantronics.monitoring.internal.PerfLogger;
+import com.plantronics.monitoring.internal.SystemMetrics;
 import com.pubnub.api.*;
-import org.json.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 public class NearRealtimeTestClient {
+    private static final Logger log =  LoggerFactory.getLogger(NearRealtimeTestClient.class);
+    public static String METRIC_NAME_LATENCY_CLIENTS="storm.load.test.clients(ms)";
+    public static String METRIC_NAME_EVENT_TIME_PERIOD="storm.load.event.timeperiod(ms)";
     public static void main(String[] args) {
 
         EventPublisher eventPublisher = null;
+        PerfLogger perfLogger = new PerfLogger();
+        try {
+            perfLogger.init();
+        } catch (Exception e) {
+           log.error("Exception intializating ",e);
+        }
         List<EventGenerator> eventGenerators = null;
         try {
 
@@ -28,9 +40,10 @@ public class NearRealtimeTestClient {
             int timeBetweenEvents = 200;
             int numClients = 1;
 
-            String sendWith = "pubnub";
+            String sendWith = "tcp";
             String host = "localhost";
-            int port = 9999;
+            int port = 8088;
+            int channelCount=1;
 
             String command = null;
             for(int i=0;i<args.length;i++) {
@@ -54,6 +67,7 @@ public class NearRealtimeTestClient {
                             profile = args[i];
                         } else if ("-time".equals(command)) {
                             timeBetweenEvents = new Integer(args[i]);
+                            perfLogger.getPerfLoggerInstance().gauge(METRIC_NAME_EVENT_TIME_PERIOD,timeBetweenEvents);
                         } else if ("-num".equals(command)) {
                             numClients = new Integer(args[i]);
                         } else if ("-host".equals(command)) {
@@ -62,6 +76,8 @@ public class NearRealtimeTestClient {
                             port = new Integer(args[i]);
                         } else if ("-sendWith".equals(command)) {
                             sendWith = args[i];
+                        } else if ("-channelCount ".equals(command)) {
+                            channelCount = new Integer(args[i]);
                         } else if ("-help".equals(command)) {
                             System.out.println("HELP:\n"
                                             + "\n -help    : this menu"
@@ -76,6 +92,7 @@ public class NearRealtimeTestClient {
                                             + "\n -num     : number of clients [1]"
                                             + "\n -host    : TCP/IP ONLY host [localhost]"
                                             + "\n -port     : TCP/IP ONLY port [9999]"
+                                            + "\n -channelCount     :  number of pub nub channels to distribute load"
                                             + "\n -sendWith: send with pubnub/tcp [tcp]"
                             );
                         }
@@ -97,6 +114,7 @@ public class NearRealtimeTestClient {
                             +"\n tcp/ip host="+host
                             +"\n tcp/ip port="+port
                             +"\n sendWith="+sendWith
+                    +"\n channelCount="+channelCount
 
             );
 
@@ -104,7 +122,7 @@ public class NearRealtimeTestClient {
 
             if (sendWith.equalsIgnoreCase("pubnub")) {
                 Pubnub pubnub = new Pubnub(publishKey, subscribeKey);
-
+                perfLogger.getPerfLoggerInstance().gauge(METRIC_NAME_LATENCY_CLIENTS,numClients);
                 for (int i=1; i<= numClients; i++) {
                     pubnub.subscribe(listenChannel+"-"+i, new Callback() {
                                 @Override
@@ -151,14 +169,16 @@ public class NearRealtimeTestClient {
             }
 
             eventGenerators = new ArrayList<EventGenerator>();
+            perfLogger.getPerfLoggerInstance().gauge(METRIC_NAME_LATENCY_CLIENTS,numClients);
             for (int i=1; i <= numClients; i++) {
+
                 eventGenerators.add(
                         spinOffClient(eventPublisher,
                                 profile,
                                 listenChannel + "-" + i,
                                 deviceId + "-" + i,
                                 userId + "-" + i,
-                                timeBetweenEvents)
+                                timeBetweenEvents, channelCount)
                 );
             }
 
@@ -180,10 +200,11 @@ public class NearRealtimeTestClient {
             String listenChannel,
             String deviceId,
             String userId,
-            int timeBetweenEvents) {
+            int timeBetweenEvents, int channelCount) {
 
         EventGenerator eventGenerator = null;
-        eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId, timeBetweenEvents);
+        eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId, timeBetweenEvents, channelCount);
+
         Thread eventGeneratorThread = new Thread(eventGenerator);
         try {
             eventGeneratorThread.start();
