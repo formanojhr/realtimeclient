@@ -1,9 +1,6 @@
 package com.plantronics;
 
-import com.plantronics.impl.NearTalkWarningEventProfile;
-import com.plantronics.impl.OverTalkWarningEventProfile;
-import com.plantronics.impl.RandomEventProfile;
-import com.plantronics.impl.RemoteTalkWarningEventProfile;
+import com.plantronics.impl.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -291,7 +288,9 @@ public class EventGenerator implements Runnable {
         sb.append("}");
 
         eventPublisher.publish(sb.toString(), channelMap.get(deviceId));
-        log.info("published to channel"+channelMap.get(deviceId));
+        if(eventPublisher instanceof PubNubEventPublisher) {
+            log.info("published to channel" + channelMap.get(deviceId));
+        }
     }
 
     /**

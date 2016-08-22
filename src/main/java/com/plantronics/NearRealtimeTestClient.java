@@ -41,7 +41,8 @@ public class NearRealtimeTestClient {
             int numClients = 1;
 
             String sendWith = "tcp";
-            String host = "localhost";
+            String host = "54.186.207.24";
+//            String host = "localhost";
             int port = 8088;
             int channelCount=1;
 
