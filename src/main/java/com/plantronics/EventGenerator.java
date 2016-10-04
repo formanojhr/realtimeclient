@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -25,6 +22,7 @@ public class EventGenerator implements Runnable {
     EventPublisher eventPublisher;
 
     SoundEventProfile soundEventProfile = null;
+    DeviceEventProfile deviceEventProfile;
 
     private String listenChannel = UUID.randomUUID().toString();
     private long timeBetweenEvents = 200;
@@ -36,7 +34,8 @@ public class EventGenerator implements Runnable {
 
     private String deviceId = "";
     private static final Logger log = LoggerFactory.getLogger(EventGenerator.class);
-    private String[] deviceIdArr= new String[]{"12345524","12343212", "23124232", "32412323","12345526", "12345527", "12345528","12345529"};
+    private String[] deviceIdArrOptions= new String[]{"12345524","12343212", "23124232", "32412323","12345526", "12345527", "12345528","12345529"};
+    private ArrayList<String> deviceIdArr= new ArrayList<String>();
     private ConcurrentHashMap<String, String> channelMap;
     private String deviceType = "";
     private String locationName = "";
@@ -54,6 +53,8 @@ public class EventGenerator implements Runnable {
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
     private int channelCount;
+    private boolean isDeviceEvent;
+    private boolean isSoundEvent;
 
 
     public EventGenerator(EventPublisher eventPublisher,
@@ -63,7 +64,6 @@ public class EventGenerator implements Runnable {
                           String userId,
                           int timeBetweenEvents) {
         this.eventPublisher = eventPublisher;
-
         if ("over_talk".equals(profile)) {
             soundEventProfile = new OverTalkWarningEventProfile();
         } else if ("remote_talk".equals(profile)) {
@@ -96,17 +96,25 @@ public class EventGenerator implements Runnable {
                           String listenChannel,
                           String deviceId,
                           String userId,
-                          int timeBetweenEvents, int channelCount) {
+                          int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent) {
         this.eventPublisher = eventPublisher;
-
-        if ("over_talk".equals(profile)) {
-            soundEventProfile = new OverTalkWarningEventProfile();
-        } else if ("remote_talk".equals(profile)) {
-            soundEventProfile = new RemoteTalkWarningEventProfile();
-        } else if ("near_talk".equals(profile)) {
-            soundEventProfile = new NearTalkWarningEventProfile();
-        } else { // random...
-            soundEventProfile = new RandomEventProfile();
+        this.isDeviceEvent=isDeviceEvent;
+        //Sound events
+        if(isSoundEvent) {
+            this.isSoundEvent = isSoundEvent;
+            if ("over_talk".equals(profile)) {
+                soundEventProfile = new OverTalkWarningEventProfile();
+            } else if ("remote_talk".equals(profile)) {
+                soundEventProfile = new RemoteTalkWarningEventProfile();
+            } else if ("near_talk".equals(profile)) {
+                soundEventProfile = new NearTalkWarningEventProfile();
+            } else { // random...
+                soundEventProfile = new RandomEventProfile();
+            }
+        }
+        //If device events
+        if(isDeviceEvent){
+            deviceEventProfile= new QuickDisconnectEventProfile();
         }
 
         this.listenChannel = listenChannel;
@@ -120,11 +128,12 @@ public class EventGenerator implements Runnable {
         this.fmt= ISODateTimeFormat.dateTime();
         this.channelCount=channelCount;
         channelMap= new ConcurrentHashMap<String, String>();
-        for(int i=1; i<= 7;i++) {
-            channelMap.put(deviceIdArr[i-1], "subdemo"+i);
+        High=channelCount;
+        for(int i=1; i<= channelCount;i++) {
+            channelMap.put(deviceIdArrOptions[i-1], "subdemo"+i);
+            deviceIdArr.add(deviceIdArrOptions[i-1]);
+            log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ "subdemo"+i);
         }
-
-
     }
 
     @Override
@@ -140,7 +149,12 @@ public class EventGenerator implements Runnable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    sendSoundEvent();
+                    if(isDeviceEvent){
+                        sendDeviceEvent();
+                    }
+                    if(isSoundEvent) {
+                        sendSoundEvent();
+                    }
                 }
 //                sendCallEnd();
                 int sleepTime = new Random().nextInt((2000 - 500) + 1) + 500;
@@ -150,6 +164,53 @@ public class EventGenerator implements Runnable {
         } catch (Exception e) {
             running = false;
             e.printStackTrace();
+        }
+    }
+
+    private void sendDeviceEvent() throws Exception{
+        deviceId=deviceIdArr.get(r.nextInt(High-Low) + Low);
+        System.out.println("deviceId: "+deviceId);
+        DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+        DeviceEvent deviceEvent = deviceEventProfile.generateDeviceEvent(timeBetweenEvents);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{");
+
+        sb.append("\"version\":\"");
+        sb.append(version);
+        sb.append("\",");
+
+        sb.append("\"eventType\":\"");
+        sb.append(QuickDisconnectEventProfile.EVENT_NAME);
+        sb.append("\",");
+
+        sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
+        sb.append("\"");
+        sb.append(fmt.print(dt));
+        sb.append("\"");
+        log.debug("Timestamp: "+fmt.print(dt));
+        sb.append(",");
+
+        sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
+        sb.append("\"");
+        sb.append(new Date().getTime());
+        sb.append("\"");
+        log.debug("OriginTime: "+new Date().getTime());
+        sb.append(",");
+
+        sb.append("\"deviceId\":\"");
+        sb.append(deviceId);
+        sb.append("\",");
+
+        sb.append("\""+Constants.JSONFieldNames.IS_CONNECTED+"\":");
+        sb.append(deviceEvent.isConnected());
+        sb.append(",");
+        sb.append("}");
+
+        eventPublisher.publish(sb.toString(), channelMap.get(deviceId));
+        if(eventPublisher instanceof PubNubEventPublisher) {
+            log.info("published to channel" + channelMap.get(deviceId));
         }
     }
 
@@ -170,7 +231,7 @@ public class EventGenerator implements Runnable {
         sb.append(version);
         sb.append("\",");
 
-        sb.append("\"type\":\"");
+        sb.append("\"eventType\":\"");
         sb.append("rtRegister");
         sb.append("\",");
 
@@ -219,7 +280,7 @@ public class EventGenerator implements Runnable {
      * sending sound event
      */
     private void sendSoundEvent() throws Exception {
-        deviceId=deviceIdArr[r.nextInt(High-Low) + Low];
+        deviceId=deviceIdArr.get(r.nextInt(High-Low) + Low);
         System.out.println("deviceId: "+deviceId);
         DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
         SoundEvent soundEvent = soundEventProfile.generateSoundEvent(timeBetweenEvents);

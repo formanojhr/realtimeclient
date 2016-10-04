@@ -3,9 +3,9 @@ package com.plantronics;
 import com.plantronics.impl.PubNubEventPublisher;
 import com.plantronics.impl.TCPEventPublisher;
 import com.plantronics.monitoring.internal.PerfLogger;
-import com.plantronics.monitoring.internal.SystemMetrics;
-import com.pubnub.api.*;
-
+import com.pubnub.api.Callback;
+import com.pubnub.api.Pubnub;
+import com.pubnub.api.PubnubError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class NearRealtimeTestClient {
         try {
             perfLogger.init();
         } catch (Exception e) {
-           log.error("Exception intializating ",e);
+           log.error("Exception initializing perf logger",e);
         }
         List<EventGenerator> eventGenerators = null;
         try {
@@ -40,11 +40,13 @@ public class NearRealtimeTestClient {
             int timeBetweenEvents = 200;
             int numClients = 1;
 
-            String sendWith = "tcp";
+            String sendWith = "pubnub";
             String host = "54.186.207.24";
 //            String host = "localhost";
             int port = 8088;
             int channelCount=1;
+            boolean isDeviceEvent=false;
+            boolean isSoundEvent=true;//default sound event
 
             String command = null;
             for(int i=0;i<args.length;i++) {
@@ -79,6 +81,10 @@ public class NearRealtimeTestClient {
                             sendWith = args[i];
                         } else if ("-channelCount ".equals(command)) {
                             channelCount = new Integer(args[i]);
+                        } else if ("-isDeviceEvent".equals(command)) {
+                                isDeviceEvent = Boolean.parseBoolean(args[i]);
+                        }else if ("-isSoundEvent".equals(command)) {
+                            isSoundEvent = Boolean.parseBoolean(args[i]);
                         } else if ("-help".equals(command)) {
                             System.out.println("HELP:\n"
                                             + "\n -help    : this menu"
@@ -94,6 +100,8 @@ public class NearRealtimeTestClient {
                                             + "\n -host    : TCP/IP ONLY host [localhost]"
                                             + "\n -port     : TCP/IP ONLY port [9999]"
                                             + "\n -channelCount     :  number of pub nub channels to distribute load"
+                                            + "\n -isDeviceEvent: Send Quick Disconnect device events"
+                                            + "\n -isSoundEvent: Send Conversation Dynamic events"
                                             + "\n -sendWith: send with pubnub/tcp [tcp]"
                             );
                         }
@@ -116,6 +124,7 @@ public class NearRealtimeTestClient {
                             +"\n tcp/ip port="+port
                             +"\n sendWith="+sendWith
                     +"\n channelCount="+channelCount
+                    +"\n isDeviceEvent="+true
 
             );
 
@@ -179,7 +188,7 @@ public class NearRealtimeTestClient {
                                 listenChannel + "-" + i,
                                 deviceId + "-" + i,
                                 userId + "-" + i,
-                                timeBetweenEvents, channelCount)
+                                timeBetweenEvents, channelCount,isDeviceEvent,isSoundEvent)
                 );
             }
 
@@ -201,10 +210,11 @@ public class NearRealtimeTestClient {
             String listenChannel,
             String deviceId,
             String userId,
-            int timeBetweenEvents, int channelCount) {
+            int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent) {
 
         EventGenerator eventGenerator = null;
-        eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId, timeBetweenEvents, channelCount);
+        eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId,
+                timeBetweenEvents, channelCount,isDeviceEvent, isSoundEvent);
 
         Thread eventGeneratorThread = new Thread(eventGenerator);
         try {

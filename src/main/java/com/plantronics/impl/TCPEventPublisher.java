@@ -1,16 +1,14 @@
 package com.plantronics.impl;
 
-import com.oracle.javafx.jmx.json.impl.JSONMessages;
 import com.plantronics.EventPublisher;
 import com.plantronics.monitoring.internal.PerfLogger;
 import com.timgroup.statsd.StatsDClient;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by bthorington on 1/12/16.

@@ -8,6 +8,6 @@ runtime options: -help : help menu -user : user id [Random UUID] -device : devic
 
 example ussage: (specified channels, pubnub keys and the time between messages at 2s vs the default 200 ms)
 
-java -cp "lib/*.jar" com.plantronics.NearRealtimeTestClient -listen rxChannel -send txChannel -time 2000 -pub "demo" -sub "demo"
+java -cp "lib/*.jar" com.plantronics.NearRealtimeTestClient -listen demo -send demo -time 2000 -pub pub-c-d1314104-910c-46c1-9e58-32d7504b9a01 -sub sub-c-cf5b662a-0da9-11e6-996b-0619f8945a4f -num 1 -channelCount 1 -isDeviceEvent true -isSoundEvent false
 
 you can login to pubnub and use their debug console and see the messages + send a message back.

@@ -16,5 +16,6 @@ public class Constants {
         public static final String AVERAGE_HEALTH = "health";
         public static final String TIME_STAMP="Timestamp";
         public static final String ORIGIN_TIME="OriginTime";
+        public static final String IS_CONNECTED="isConnected";
     }
 }
