@@ -109,6 +109,27 @@ public class NearRealtimeTestClient {
                     command = null;
                 } else {
                     command = args[i];
+                    if("-help".equals(command)) {
+                        System.out.println("HELP:\n"
+                                + "\n -help    : this menu"
+                                + "\n -user    : user id [Random UUID]"
+                                + "\n -device  : device id [Random UUID]"
+                                + "\n -send    : send channel [demo]"
+                                + "\n -listen  : listen channel [Random UUID]"
+                                + "\n -pub     : publish key "
+                                + "\n -sub     : subscribe key "
+                                + "\n -profile : profile [random]/over_talk/remote_talk/near_talk"
+                                + "\n -time    : time between events in ms. [200]"
+                                + "\n -num     : number of clients [1]"
+                                + "\n -host    : TCP/IP ONLY host [localhost]"
+                                + "\n -port     : TCP/IP ONLY port [9999]"
+                                + "\n -channelCount     :  number of pub nub channels to distribute load"
+                                + "\n -isDeviceEvent: Send Quick Disconnect device events"
+                                + "\n -isSoundEvent: Send Conversation Dynamic events"
+                                + "\n -sendWith: send with pubnub/tcp [tcp]"
+                        );
+                        System.exit(0);
+                    }
                 }
 
             }
