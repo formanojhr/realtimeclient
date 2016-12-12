@@ -44,7 +44,7 @@ public class NearRealtimeTestClient {
             String host = "54.186.207.24";
 //            String host = "localhost";
             int port = 8088;
-            int channelCount=1;
+            int channelCount=4;
             boolean isDeviceEvent=false;
             boolean isSoundEvent=true;//default sound event
 

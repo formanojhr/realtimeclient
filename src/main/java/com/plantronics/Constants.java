@@ -14,8 +14,15 @@ public class Constants {
         public static final String FAR_TALK_DURATION = "FarTalkDuration";
         public static final String DOUBLE_TALK_DURATION = "DoubleTalkDuration";
         public static final String AVERAGE_HEALTH = "health";
-        public static final String TIME_STAMP="Timestamp";
-        public static final String ORIGIN_TIME="OriginTime";
+        public static final String TIME_STAMP="timeStamp";
+        public static final String ORIGIN_TIME="originTime";
         public static final String IS_CONNECTED="isConnected";
+//        public static final String QUICK_DISCONNECT="quickDisconnect";
+//        public static final String QUICK_CONNECT="quickConnect";
+        public static final String QUICK_DISCONNECT="HS_STATE_CHANGE_QD_DISCONNECTED";
+        public static final String QUICK_CONNECT="HS_STATE_CHANGE_QD_CONNECTED";
+
+        public static final String MUTE_ON="HS_STATE_CHANGE_MUTE_ON";
+        public static final String MUTE_OFF="HS_STATE_CHANGE_MUTE_OFF";
     }
 }

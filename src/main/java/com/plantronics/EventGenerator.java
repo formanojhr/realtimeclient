@@ -55,8 +55,11 @@ public class EventGenerator implements Runnable {
     private int channelCount;
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
-
-
+    private static String channelPrefix="7f0bc41d-be73-4ae2-89f0-06a128c7902d_pub";
+//    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
+    private static String tenantId="7f0bc41d-be73-4ae2-89f0-06a128c7902d";
+    private String eventype="QD";
+//    private String eventype="MUTE";
     public EventGenerator(EventPublisher eventPublisher,
                           String profile,
                           String listenChannel,
@@ -111,6 +114,11 @@ public class EventGenerator implements Runnable {
             } else { // random...
                 soundEventProfile = new RandomEventProfile();
             }
+            for(int i=1; i<= channelCount;i++) {
+                channelMap.put(deviceIdArrOptions[i-1], "subdemo"+i);
+                deviceIdArr.add(deviceIdArrOptions[i-1]);
+                log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ "subdemo"+i);
+            }
         }
         //If device events
         if(isDeviceEvent){
@@ -130,9 +138,9 @@ public class EventGenerator implements Runnable {
         channelMap= new ConcurrentHashMap<String, String>();
         High=channelCount;
         for(int i=1; i<= channelCount;i++) {
-            channelMap.put(deviceIdArrOptions[i-1], "subdemo"+i);
+            channelMap.put(deviceIdArrOptions[i-1], channelPrefix+i);
             deviceIdArr.add(deviceIdArrOptions[i-1]);
-            log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ "subdemo"+i);
+            log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ channelPrefix+i);
         }
     }
 
@@ -182,35 +190,51 @@ public class EventGenerator implements Runnable {
         sb.append("\",");
 
         sb.append("\"eventType\":\"");
-        sb.append(QuickDisconnectEventProfile.EVENT_NAME);
+        if(deviceEvent.isConnected()==true) {
+            if(this.eventype.contains("QD")) {
+                sb.append(Constants.JSONFieldNames.QUICK_CONNECT);
+            }
+            else if(this.eventype.contains("MUTE")){
+                sb.append(Constants.JSONFieldNames.MUTE_ON);
+            }
+        }
+        else{
+            if(this.eventype.contains("QD")) {
+                sb.append(Constants.JSONFieldNames.QUICK_DISCONNECT);
+            }
+            else if(this.eventype.contains("MUTE")){
+                sb.append(Constants.JSONFieldNames.MUTE_OFF);
+            }
+        }
         sb.append("\",");
-
         sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
         sb.append("\"");
         sb.append(fmt.print(dt));
         sb.append("\"");
-        log.debug("Timestamp: "+fmt.print(dt));
+        log.debug(Constants.JSONFieldNames.TIME_STAMP+fmt.print(dt));
         sb.append(",");
 
         sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
         sb.append("\"");
         sb.append(new Date().getTime());
         sb.append("\"");
-        log.debug("OriginTime: "+new Date().getTime());
+        log.debug("originTime: "+new Date().getTime());
         sb.append(",");
+
+        sb.append("\"tenantId\":\"");
+        sb.append(tenantId);
+        sb.append("\",");
 
         sb.append("\"deviceId\":\"");
         sb.append(deviceId);
         sb.append("\",");
-
-        sb.append("\""+Constants.JSONFieldNames.IS_CONNECTED+"\":");
-        sb.append(deviceEvent.isConnected());
-        sb.append(",");
         sb.append("}");
+
+
 
         eventPublisher.publish(sb.toString(), channelMap.get(deviceId));
         if(eventPublisher instanceof PubNubEventPublisher) {
-            log.info("published to channel" + channelMap.get(deviceId));
+            log.info("published to channel id: " + channelMap.get(deviceId));
         }
     }
 
@@ -257,6 +281,10 @@ public class EventGenerator implements Runnable {
 
         sb.append("\"listenChannel\":\"");
         sb.append(listenChannel);
+        sb.append("\",");
+
+        sb.append("\"managerChannel\":\"");
+        sb.append(managerChannel);
         sb.append("\",");
 
         sb.append("\"managerChannel\":\"");
