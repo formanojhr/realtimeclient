@@ -55,11 +55,11 @@ public class EventGenerator implements Runnable {
     private int channelCount;
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
-    private static String channelPrefix="7f0bc41d-be73-4ae2-89f0-06a128c7902d_pub";
-//    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
-    private static String tenantId="7f0bc41d-be73-4ae2-89f0-06a128c7902d";
-    private String eventype="QD";
-//    private String eventype="MUTE";
+//    private static String channelPrefix="68ee3979-0c48-4f10-b12d-1913882f7f25_pub";
+    private static String channelPrefix="68ee3979-0c48-4f10-b12d-1913882f7f25_pub";
+    private static String tenantId="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a";
+//    private String eventype="QD";
+ private String eventype="MUTE";
     public EventGenerator(EventPublisher eventPublisher,
                           String profile,
                           String listenChannel,
@@ -114,6 +114,7 @@ public class EventGenerator implements Runnable {
             } else { // random...
                 soundEventProfile = new RandomEventProfile();
             }
+            channelMap= new ConcurrentHashMap<String, String>();
             for(int i=1; i<= channelCount;i++) {
                 channelMap.put(deviceIdArrOptions[i-1], "subdemo"+i);
                 deviceIdArr.add(deviceIdArrOptions[i-1]);
@@ -225,10 +226,19 @@ public class EventGenerator implements Runnable {
         sb.append(tenantId);
         sb.append("\",");
 
+        sb.append("\"productCode\":");
+        sb.append("{");
+        sb.append("\"base\":");
+        sb.append("\"xxxx\"");
+        sb.append(",");
+        sb.append("\"headset\":");
+        sb.append("\"yyyy\"");
+        sb.append("}");
+        sb.append(",");
         sb.append("\"deviceId\":\"");
         sb.append(deviceId);
-        sb.append("\",");
-        sb.append("}");
+//        sb.append("\",");
+        sb.append("\"}");
 
 
 
