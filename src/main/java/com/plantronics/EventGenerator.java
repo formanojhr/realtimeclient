@@ -25,7 +25,7 @@ public class EventGenerator implements Runnable {
     DeviceEventProfile deviceEventProfile;
 
     private String listenChannel = UUID.randomUUID().toString();
-    private long timeBetweenEvents = 200;
+    private long period = 200;
     private boolean running = true;
 
     private Random random = new Random();
@@ -55,9 +55,10 @@ public class EventGenerator implements Runnable {
     private int channelCount;
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
-//    private static String channelPrefix="68ee3979-0c48-4f10-b12d-1913882f7f25_pub";
+
     private static String channelPrefix="68ee3979-0c48-4f10-b12d-1913882f7f25_pub";
-    private static String tenantId="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a";
+//    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
+    private static String tenantId="68ee3979-0c48-4f10-b12d-1913882f7f25";
 //    private String eventype="QD";
  private String eventype="MUTE";
     public EventGenerator(EventPublisher eventPublisher,
@@ -78,7 +79,7 @@ public class EventGenerator implements Runnable {
         }
 
         this.listenChannel = listenChannel;
-        this.timeBetweenEvents = timeBetweenEvents;
+        this.period = timeBetweenEvents;
 
         this.userId = userId;
         this.deviceId = deviceId;
@@ -116,9 +117,9 @@ public class EventGenerator implements Runnable {
             }
             channelMap= new ConcurrentHashMap<String, String>();
             for(int i=1; i<= channelCount;i++) {
-                channelMap.put(deviceIdArrOptions[i-1], "subdemo"+i);
+                channelMap.put(deviceIdArrOptions[i-1], channelPrefix+i);
                 deviceIdArr.add(deviceIdArrOptions[i-1]);
-                log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ "subdemo"+i);
+                log.info("Added device: channelName => "+ deviceIdArr.get(i-1) + " : "+ channelPrefix+i);
             }
         }
         //If device events
@@ -127,7 +128,7 @@ public class EventGenerator implements Runnable {
         }
 
         this.listenChannel = listenChannel;
-        this.timeBetweenEvents = timeBetweenEvents;
+        this.period = timeBetweenEvents;
 
         this.userId = userId;
         this.deviceId = deviceId;
@@ -154,7 +155,7 @@ public class EventGenerator implements Runnable {
 //                sendCallStart();
                 for (int i=0; i < numEvents; i++) {
                     try {
-                        Thread.sleep(timeBetweenEvents);
+                        Thread.sleep(period);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -180,7 +181,7 @@ public class EventGenerator implements Runnable {
         deviceId=deviceIdArr.get(r.nextInt(High-Low) + Low);
         System.out.println("deviceId: "+deviceId);
         DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
-        DeviceEvent deviceEvent = deviceEventProfile.generateDeviceEvent(timeBetweenEvents);
+        DeviceEvent deviceEvent = deviceEventProfile.generateDeviceEvent(period);
 
         StringBuilder sb = new StringBuilder();
 
@@ -321,7 +322,7 @@ public class EventGenerator implements Runnable {
         deviceId=deviceIdArr.get(r.nextInt(High-Low) + Low);
         System.out.println("deviceId: "+deviceId);
         DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
-        SoundEvent soundEvent = soundEventProfile.generateSoundEvent(timeBetweenEvents);
+        SoundEvent soundEvent = soundEventProfile.generateSoundEvent(period);
 
         StringBuilder sb = new StringBuilder();
 
@@ -331,8 +332,8 @@ public class EventGenerator implements Runnable {
         sb.append(version);
         sb.append("\",");
 
-        sb.append("\"type\":\"");
-        sb.append("conversationDynamic");
+        sb.append("\"eventType\":\"");
+        sb.append("CD_EVENT");
         sb.append("\",");
 
 //        sb.append("\"eventTime\":");
@@ -349,13 +350,25 @@ public class EventGenerator implements Runnable {
         sb.append("\"");
         log.debug("OriginTime: "+new Date().getTime());
         sb.append(",");
-
+        sb.append("\"productCode\":");
+        sb.append("{");
+        sb.append("\"base\":");
+        sb.append("\"xxxx\"");
+        sb.append(",");
+        sb.append("\"headset\":");
+        sb.append("\"yyyy\"");
+        sb.append("}");
+        sb.append(",");
         sb.append("\"deviceId\":\"");
         sb.append(deviceId);
         sb.append("\",");
+        sb.append("\"tenantId\":\"");
+        sb.append(tenantId);
+        sb.append("\",");
 
-        sb.append("\"timePeriod\":");
-        sb.append(timeBetweenEvents);
+
+        sb.append("\""+Constants.JSONFieldNames.PERIOD+"\":");
+        sb.append(1000);
         sb.append(",");
 
 //        sb.append("\"farEndDuration\":");

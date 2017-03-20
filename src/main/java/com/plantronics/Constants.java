@@ -10,13 +10,14 @@ public class Constants {
     public static String PUBNUB_PUB_CHANNEL="demopub";
     public static final String timePeriodInMS = "1000";
     public static final class JSONFieldNames {
-        public static final String NEAR_TALK_DURATION = "NearTalkDuration";
-        public static final String FAR_TALK_DURATION = "FarTalkDuration";
-        public static final String DOUBLE_TALK_DURATION = "DoubleTalkDuration";
+        public static final String NEAR_TALK_DURATION = "nearTalk";
+        public static final String FAR_TALK_DURATION = "farTalk";
+        public static final String DOUBLE_TALK_DURATION = "overTalk";
         public static final String AVERAGE_HEALTH = "health";
         public static final String TIME_STAMP="timeStamp";
         public static final String ORIGIN_TIME="originTime";
         public static final String IS_CONNECTED="isConnected";
+        public static final String PERIOD="periodicity";
 //        public static final String QUICK_DISCONNECT="quickDisconnect";
 //        public static final String QUICK_CONNECT="quickConnect";
         public static final String QUICK_DISCONNECT="HS_STATE_CHANGE_QD_DISCONNECTED";
