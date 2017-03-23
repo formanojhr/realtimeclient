@@ -1,10 +1,13 @@
 package com.plantronics;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.plantronics.impl.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,83 +326,110 @@ public class EventGenerator implements Runnable {
         System.out.println("deviceId: "+deviceId);
         DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
         SoundEvent soundEvent = soundEventProfile.generateSoundEvent(period);
+        //create product complex json
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode position = mapper.createObjectNode();
+        ObjectNode product = mapper.createObjectNode();
 
-        StringBuilder sb = new StringBuilder();
+        position.put("eventType",Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT);
+        product.put("headset", deviceId);
+        product.put("baseId", "YYY");
+        position.put("productCode", product);//added complex product
+        position.put("version",version);
+        position.put(Constants.JSONFieldNames.TIME_STAMP,fmt.print(dt));
+        position.put(Constants.JSONFieldNames.ORIGIN_TIME,new Date().getTime());
+        position.put("tenantId",tenantId);
 
-        sb.append("{");
+        //add CD events
 
-        sb.append("\"version\":\"");
-        sb.append(version);
-        sb.append("\",");
+//        position.put();
+        ObjectNode cdEventDetail = mapper.createObjectNode();
+        cdEventDetail.put(Constants.JSONFieldNames.NEAR_TALK_DURATION,soundEvent.getNearEndDuration());
+        cdEventDetail.put(Constants.JSONFieldNames.FAR_TALK_DURATION,soundEvent.getFarEndDuration());
+        cdEventDetail.put(Constants.JSONFieldNames.DOUBLE_TALK_DURATION,soundEvent.getOverTalkDuration());
+        cdEventDetail.put(Constants.JSONFieldNames.PERIOD,1000);
+        cdEventDetail.put(Constants.JSONFieldNames.FAR_END,soundEvent.getFarEndMaxDb());
+        cdEventDetail.put(Constants.JSONFieldNames.NEAR_END,soundEvent.getNearEndMaxDb());
 
-        sb.append("\"eventType\":\"");
-        sb.append("CD_EVENT");
-        sb.append("\",");
+        //add the cd detail event
+        position.put(Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT,cdEventDetail);
 
-//        sb.append("\"eventTime\":");
-        sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
-        sb.append("\"");
-        sb.append(fmt.print(dt));
-        sb.append("\"");
-        log.debug("TimestamP: "+fmt.print(dt));
-        sb.append(",");
+//        StringBuilder sb = new StringBuilder();
+//
+//        sb.append("{");
+//
+//        sb.append("\"version\":\"");
+//        sb.append(version);
+//        sb.append("\",");
+//
+//        sb.append("\"eventType\":\"");
+//        sb.append(Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT);
+//        sb.append("\",");
+//
+////        sb.append("\"eventTime\":");
+//        sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
+//        sb.append("\"");
+//        sb.append(fmt.print(dt));
+//        sb.append("\"");
+//        log.debug("TimestamP: "+fmt.print(dt));
+//        sb.append(",");
+//
+//        sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
+//        sb.append("\"");
+//        sb.append(new Date().getTime());
+//        sb.append("\"");
+//        log.debug("OriginTime: "+new Date().getTime());
+//        sb.append(",");
+//        sb.append("\"productCode\":");
+//        sb.append("{");
+//        sb.append("\"base\":");
+//        sb.append("\"xxxx\"");
+//        sb.append(",");
+//        sb.append("\"headset\":");
+//        sb.append("\"yyyy\"");
+//        sb.append("}");
+//        sb.append(",");
+//        sb.append("\"deviceId\":\"");
+//        sb.append(deviceId);
+//        sb.append("\",");
+//        sb.append("\"tenantId\":\"");
+//        sb.append(tenantId);
+//        sb.append("\",");
+//
+//
+//        sb.append("\""+Constants.JSONFieldNames.PERIOD+"\":");
+//        sb.append(1000);
+//        sb.append(",");
+//
+////        sb.append("\"farEndDuration\":");
+//        sb.append("\""+Constants.JSONFieldNames.FAR_TALK_DURATION+"\":");
+//        sb.append(soundEvent.getFarEndDuration());
+//        sb.append(",");
+//
+////        sb.append("\"nearEndDuration\":");
+//        sb.append("\""+Constants.JSONFieldNames.NEAR_TALK_DURATION+"\":");
+//        sb.append(soundEvent.getNearEndDuration());
+//        sb.append(",");
+//
+////        sb.append("\"overTalkDuration\":");
+//        sb.append("\""+Constants.JSONFieldNames.DOUBLE_TALK_DURATION+"\":");
+//        sb.append(soundEvent.getOverTalkDuration());
+//        sb.append(",");
+//
+//        sb.append("\"noTalkDuration\":");
+//        sb.append(soundEvent.getNoTalkDuration());
+//        sb.append(",");
+//
+//        sb.append("\"farEndMaxDb\":");
+//        sb.append(soundEvent.getFarEndMaxDb());
+//        sb.append(",");
+//
+//        sb.append("\"nearEndMaxDb\":");
+//        sb.append(soundEvent.getNearEndMaxDb());
+//
+//        sb.append("}");
 
-        sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
-        sb.append("\"");
-        sb.append(new Date().getTime());
-        sb.append("\"");
-        log.debug("OriginTime: "+new Date().getTime());
-        sb.append(",");
-        sb.append("\"productCode\":");
-        sb.append("{");
-        sb.append("\"base\":");
-        sb.append("\"xxxx\"");
-        sb.append(",");
-        sb.append("\"headset\":");
-        sb.append("\"yyyy\"");
-        sb.append("}");
-        sb.append(",");
-        sb.append("\"deviceId\":\"");
-        sb.append(deviceId);
-        sb.append("\",");
-        sb.append("\"tenantId\":\"");
-        sb.append(tenantId);
-        sb.append("\",");
-
-
-        sb.append("\""+Constants.JSONFieldNames.PERIOD+"\":");
-        sb.append(1000);
-        sb.append(",");
-
-//        sb.append("\"farEndDuration\":");
-        sb.append("\""+Constants.JSONFieldNames.FAR_TALK_DURATION+"\":");
-        sb.append(soundEvent.getFarEndDuration());
-        sb.append(",");
-
-//        sb.append("\"nearEndDuration\":");
-        sb.append("\""+Constants.JSONFieldNames.NEAR_TALK_DURATION+"\":");
-        sb.append(soundEvent.getNearEndDuration());
-        sb.append(",");
-
-//        sb.append("\"overTalkDuration\":");
-        sb.append("\""+Constants.JSONFieldNames.DOUBLE_TALK_DURATION+"\":");
-        sb.append(soundEvent.getOverTalkDuration());
-        sb.append(",");
-
-        sb.append("\"noTalkDuration\":");
-        sb.append(soundEvent.getNoTalkDuration());
-        sb.append(",");
-
-        sb.append("\"farEndMaxDb\":");
-        sb.append(soundEvent.getFarEndMaxDb());
-        sb.append(",");
-
-        sb.append("\"nearEndMaxDb\":");
-        sb.append(soundEvent.getNearEndMaxDb());
-
-        sb.append("}");
-
-        eventPublisher.publish(sb.toString(), channelMap.get(deviceId));
+        eventPublisher.publish(position.toString(), channelMap.get(deviceId));
         if(eventPublisher instanceof PubNubEventPublisher) {
             log.info("published to channel" + channelMap.get(deviceId));
         }

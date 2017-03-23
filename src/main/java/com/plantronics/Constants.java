@@ -13,6 +13,8 @@ public class Constants {
         public static final String NEAR_TALK_DURATION = "nearTalk";
         public static final String FAR_TALK_DURATION = "farTalk";
         public static final String DOUBLE_TALK_DURATION = "overTalk";
+        public static final String FAR_END = "rxLevelIn";
+        public static final String NEAR_END="txLevelOut";
         public static final String AVERAGE_HEALTH = "health";
         public static final String TIME_STAMP="timeStamp";
         public static final String ORIGIN_TIME="originTime";
@@ -25,5 +27,6 @@ public class Constants {
 
         public static final String MUTE_ON="HS_STATE_CHANGE_MUTE_ON";
         public static final String MUTE_OFF="HS_STATE_CHANGE_MUTE_OFF";
+        public static final String CONVER_DYNAMIC_EVENT="CD_EVENT";
     }
 }

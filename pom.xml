@@ -7,7 +7,9 @@
     <groupId>com.plantronics.pubnub.testclient</groupId>
     <artifactId>testclient</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <properties>
+        <jackson.version>2.6.6</jackson.version>
+    </properties>
     <dependencies>
         <!-- StatD -->
         <dependency>
@@ -25,8 +27,22 @@
             <artifactId>log4j-api</artifactId>
             <version>2.5</version>
         </dependency>
-
-    <dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.13</version>
