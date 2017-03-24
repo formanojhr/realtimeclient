@@ -333,7 +333,7 @@ public class EventGenerator implements Runnable {
 
         position.put("eventType",Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT);
         product.put("headset", deviceId);
-        product.put("baseId", "YYY");
+        product.put("base", "YYY");
         position.put("productCode", product);//added complex product
         position.put("version",version);
         position.put(Constants.JSONFieldNames.TIME_STAMP,fmt.print(dt));
