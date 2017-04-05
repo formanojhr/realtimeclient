@@ -58,10 +58,14 @@ public class EventGenerator implements Runnable {
     private int channelCount;
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
+    private String tenantId;
+    private String channelPrefix ;
+   // private String tenantId+"_pub"=tenantId+"_pub";
 
-    private static String channelPrefix="68ee3979-0c48-4f10-b12d-1913882f7f25_pub";
+
+
 //    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
-    private static String tenantId="68ee3979-0c48-4f10-b12d-1913882f7f25";
+ //   private static String tenantId="68ee3979-0c48-4f10-b12d-1913882f7f25";
 //    private String eventype="QD";
  private String eventype="MUTE";
     public EventGenerator(EventPublisher eventPublisher,
@@ -69,7 +73,7 @@ public class EventGenerator implements Runnable {
                           String listenChannel,
                           String deviceId,
                           String userId,
-                          int timeBetweenEvents) {
+                          int timeBetweenEvents,String tenantId) {
         this.eventPublisher = eventPublisher;
         if ("over_talk".equals(profile)) {
             soundEventProfile = new OverTalkWarningEventProfile();
@@ -87,9 +91,13 @@ public class EventGenerator implements Runnable {
         this.userId = userId;
         this.deviceId = deviceId;
         this.numEvents = new Random().nextInt((1000 - 100) + 1) + 100; // range [100-1000];
+        this.tenantId = tenantId;
         df.setTimeZone(tz);
         this.dt= new DateTime();
         this.fmt= ISODateTimeFormat.dateTime();
+        this.tenantId = tenantId;
+        this.channelPrefix=channelPrefix;
+
         channelMap= new ConcurrentHashMap<String, String>();
         int i=1;
         for(String device:deviceIdArr) {
@@ -103,7 +111,7 @@ public class EventGenerator implements Runnable {
                           String listenChannel,
                           String deviceId,
                           String userId,
-                          int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent) {
+                          int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId) {
         this.eventPublisher = eventPublisher;
         this.isDeviceEvent=isDeviceEvent;
         //Sound events
@@ -119,6 +127,7 @@ public class EventGenerator implements Runnable {
                 soundEventProfile = new RandomEventProfile();
             }
             channelMap= new ConcurrentHashMap<String, String>();
+            channelPrefix = tenantId+"_pub";
             for(int i=1; i<= channelCount;i++) {
                 channelMap.put(deviceIdArrOptions[i-1], channelPrefix+i);
                 deviceIdArr.add(deviceIdArrOptions[i-1]);
@@ -140,6 +149,8 @@ public class EventGenerator implements Runnable {
         this.dt= new DateTime();
         this.fmt= ISODateTimeFormat.dateTime();
         this.channelCount=channelCount;
+        this.tenantId = tenantId;
+       // this.channelPrefix=channelPrefix;
         channelMap= new ConcurrentHashMap<String, String>();
         High=channelCount;
         for(int i=1; i<= channelCount;i++) {

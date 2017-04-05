@@ -37,6 +37,7 @@ public class NearRealtimeTestClient {
             String listenChannel = UUID.randomUUID().toString();
             String deviceId = UUID.randomUUID().toString();
             String userId = UUID.randomUUID().toString();
+            String tenantId = UUID.randomUUID().toString();
             int timeBetweenEvents = 200;
             int numClients = 1;
 
@@ -85,7 +86,9 @@ public class NearRealtimeTestClient {
                                 isDeviceEvent = Boolean.parseBoolean(args[i]);
                         }else if ("-isSoundEvent".equals(command)) {
                             isSoundEvent = Boolean.parseBoolean(args[i]);
-                        } else if ("-help".equals(command)) {
+                        } else if ("-tenantId".equals(command)) {
+                            tenantId = args[i];
+                        }else if ("-help".equals(command)) {
                             System.out.println("HELP:\n"
                                             + "\n -help    : this menu"
                                             + "\n -user    : user id [Random UUID]"
@@ -103,6 +106,7 @@ public class NearRealtimeTestClient {
                                             + "\n -isDeviceEvent: Send Quick Disconnect device events"
                                             + "\n -isSoundEvent: Send Conversation Dynamic events"
                                             + "\n -sendWith: send with pubnub/tcp [tcp]"
+                                            + "\n -tenantId: Id of the tenant the partner is subscribed to"
                             );
                         }
                     }
@@ -146,6 +150,7 @@ public class NearRealtimeTestClient {
                             +"\n sendWith="+sendWith
                     +"\n channelCount="+channelCount
                     +"\n isDeviceEvent="+true
+                    +"\n tenantId="+tenantId
 
             );
 
@@ -201,6 +206,7 @@ public class NearRealtimeTestClient {
 
             eventGenerators = new ArrayList<EventGenerator>();
             perfLogger.getPerfLoggerInstance().gauge(METRIC_NAME_LATENCY_CLIENTS,numClients);
+            log.info("tenantId" + tenantId);
             for (int i=1; i <= numClients; i++) {
 
                 eventGenerators.add(
@@ -209,7 +215,7 @@ public class NearRealtimeTestClient {
                                 listenChannel + "-" + i,
                                 deviceId + "-" + i,
                                 userId + "-" + i,
-                                timeBetweenEvents, channelCount,isDeviceEvent,isSoundEvent)
+                                timeBetweenEvents, channelCount,isDeviceEvent,isSoundEvent,tenantId)
                 );
             }
 
@@ -231,11 +237,13 @@ public class NearRealtimeTestClient {
             String listenChannel,
             String deviceId,
             String userId,
-            int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent) {
+            int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId)
+
+    {
 
         EventGenerator eventGenerator = null;
         eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId,
-                timeBetweenEvents, channelCount,isDeviceEvent, isSoundEvent);
+                timeBetweenEvents, channelCount,isDeviceEvent, isSoundEvent,tenantId);
 
         Thread eventGeneratorThread = new Thread(eventGenerator);
         try {
