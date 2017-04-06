@@ -59,15 +59,15 @@ public class EventGenerator implements Runnable {
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
     private String tenantId;
-    private String channelPrefix ;
+    private String channelPrefix;
    // private String tenantId+"_pub"=tenantId+"_pub";
 
 
 
 //    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
  //   private static String tenantId="68ee3979-0c48-4f10-b12d-1913882f7f25";
-//    private String eventype="QD";
- private String eventype="MUTE";
+    private String eventype="QD";
+ //private String eventype="MUTE";
     public EventGenerator(EventPublisher eventPublisher,
                           String profile,
                           String listenChannel,
@@ -114,6 +114,7 @@ public class EventGenerator implements Runnable {
                           int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId) {
         this.eventPublisher = eventPublisher;
         this.isDeviceEvent=isDeviceEvent;
+        channelPrefix = tenantId+"_pub";
         //Sound events
         if(isSoundEvent) {
             this.isSoundEvent = isSoundEvent;
@@ -127,7 +128,7 @@ public class EventGenerator implements Runnable {
                 soundEventProfile = new RandomEventProfile();
             }
             channelMap= new ConcurrentHashMap<String, String>();
-            channelPrefix = tenantId+"_pub";
+
             for(int i=1; i<= channelCount;i++) {
                 channelMap.put(deviceIdArrOptions[i-1], channelPrefix+i);
                 deviceIdArr.add(deviceIdArrOptions[i-1]);
