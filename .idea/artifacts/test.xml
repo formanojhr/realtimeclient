@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact name="test">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="root">
+      <element id="artifact" artifact-name="realtimetestclient:jar" />
+      <element id="archive" name="test.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

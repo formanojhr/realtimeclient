@@ -3,9 +3,16 @@ package com.plantronics;
 import com.plantronics.impl.PubNubEventPublisher;
 import com.plantronics.impl.TCPEventPublisher;
 import com.plantronics.monitoring.internal.PerfLogger;
-import com.pubnub.api.Callback;
-import com.pubnub.api.Pubnub;
-import com.pubnub.api.PubnubError;
+//import com.pubnub.api.Callback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.PubNubError;
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.enums.PNReconnectionPolicy;
+import com.pubnub.api.enums.PNStatusCategory;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +27,7 @@ public class NearRealtimeTestClient {
     public static void main(String[] args) {
 
         EventPublisher eventPublisher = null;
+
         PerfLogger perfLogger = new PerfLogger();
         try {
             perfLogger.init();
@@ -29,15 +37,20 @@ public class NearRealtimeTestClient {
         List<EventGenerator> eventGenerators = null;
         try {
 
-            String publishKey = "demo";
-            String subscribeKey = "demo";
+//            String publishKey = "demo";
+//            String subscribeKey = "demo";
+
+             String publishKey = "pub-c-f4cbb266-7f16-458d-8ee3-299e464010fd";
+             String subscribeKey = "sub-c-4acf5b5c-0f40-11e7-85be-02ee2ddab7fe";
+            PubNub pubNub;
 
             String sendChannel = "demo";
             String profile = "random";
             String listenChannel = UUID.randomUUID().toString();
             String deviceId = UUID.randomUUID().toString();
             String userId = UUID.randomUUID().toString();
-            String tenantId = UUID.randomUUID().toString();
+            //String tenantId = UUID.randomUUID().toString();
+            String tenantId = "777aa081-16c7-4a59-9aa2-1a182965d86d";
             int timeBetweenEvents = 200;
             int numClients = 1;
 
@@ -48,6 +61,7 @@ public class NearRealtimeTestClient {
             int channelCount=4;
             boolean isDeviceEvent=false;
             boolean isSoundEvent=true;//default sound event
+
 
             String command = null;
             for(int i=0;i<args.length;i++) {
@@ -157,47 +171,58 @@ public class NearRealtimeTestClient {
 
 
             if (sendWith.equalsIgnoreCase("pubnub")) {
-                Pubnub pubnub = new Pubnub(publishKey, subscribeKey);
+                PNConfiguration pubnubConfig = new PNConfiguration();
+                pubnubConfig.setReconnectionPolicy(PNReconnectionPolicy.LINEAR);
+                pubnubConfig.setSecure(true);
+                pubnubConfig.setSubscribeKey(subscribeKey);
+                pubnubConfig.setPublishKey(publishKey);
+
+                PubNub pubnub = new PubNub(pubnubConfig);
+
+
                 perfLogger.getPerfLoggerInstance().gauge(METRIC_NAME_LATENCY_CLIENTS,numClients);
                 for (int i=1; i<= numClients; i++) {
-                    pubnub.subscribe(listenChannel+"-"+i, new Callback() {
-                                @Override
-                                public void connectCallback(String channel, Object message) {
-                                    System.out.println("SUBSCRIBE : CONNECT on channel:" + channel
-                                            + " : " + message.getClass() + " : "
-                                            + message.toString());
-                                }
 
-                                @Override
-                                public void disconnectCallback(String channel, Object message) {
-                                    System.out.println("SUBSCRIBE : DISCONNECT on channel:" + channel
-                                            + " : " + message.getClass() + " : "
-                                            + message.toString());
-                                }
 
-                                public void reconnectCallback(String channel, Object message) {
-                                    System.out.println("SUBSCRIBE : RECONNECT on channel:" + channel
-                                            + " : " + message.getClass() + " : "
-                                            + message.toString());
-                                }
-
-                                @Override
-                                public void successCallback(String channel, Object message) {
-                                    System.out.println("SUBSCRIBE : " + channel + " : "
-                                            + message.getClass() + " : " + message.toString());
-                                }
-
-                                @Override
-                                public void errorCallback(String channel, PubnubError error) {
-                                    System.out.println("SUBSCRIBE : ERROR on channel " + channel
-                                            + " : " + error.toString());
-                                }
-                            }
-                    );
+//                    pubnub.subscribe(listenChannel+"-"+i, new Callback() {
+//                                @Override
+//                                public void connectCallback(String channel, Object message) {
+//                                    System.out.println("SUBSCRIBE : CONNECT on channel:" + channel
+//                                            + " : " + message.getClass() + " : "
+//                                            + message.toString());
+//                                }
+//
+//                                @Override
+//                                public void disconnectCallback(String channel, Object message) {
+//                                    System.out.println("SUBSCRIBE : DISCONNECT on channel:" + channel
+//                                            + " : " + message.getClass() + " : "
+//                                            + message.toString());
+//                                }
+//
+//                                public void reconnectCallback(String channel, Object message) {
+//                                    System.out.println("SUBSCRIBE : RECONNECT on channel:" + channel
+//                                            + " : " + message.getClass() + " : "
+//                                            + message.toString());
+//                                }
+//
+//                                @Override
+//                                public void successCallback(String channel, Object message) {
+//                                    System.out.println("SUBSCRIBE : " + channel + " : "
+//                                            + message.getClass() + " : " + message.toString());
+//                                }
+//
+//                                @Override
+//                                public void errorCallback(String channel, PubnubError error) {
+//                                    System.out.println("SUBSCRIBE : ERROR on channel " + channel
+//                                            + " : " + error.toString());
+//                                }
+//                            }
+//                    );
                     Thread.yield();
                 }
 
-                eventPublisher = new PubNubEventPublisher(pubnub, sendChannel);
+                eventPublisher = new PubNubEventPublisher(pubnub,sendChannel);
+
             } else if (sendWith.equalsIgnoreCase("tcp")) {
                 eventPublisher = new TCPEventPublisher(host, port);
             } else {

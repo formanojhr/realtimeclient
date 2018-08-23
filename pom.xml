@@ -7,8 +7,11 @@
     <groupId>com.plantronics.pubnub.testclient</groupId>
     <artifactId>testclient</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <properties>
         <jackson.version>2.6.6</jackson.version>
+        <!--<runSuite>**/com.plantronics.FastTestSuite.class</runSuite>-->
+        <runSuite>**/FastTestSuite.class</runSuite>
     </properties>
     <dependencies>
         <!-- StatD -->
@@ -17,10 +20,21 @@
             <artifactId>java-statsd-client</artifactId>
             <version>3.1.0</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.pubnub</groupId>-->
+            <!--<artifactId>pubnub</artifactId>-->
+            <!--<version>3.7.5</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.pubnub</groupId>
             <artifactId>pubnub</artifactId>
-            <version>3.7.5</version>
+            <version>4.0.14</version>
+        </dependency>
+        <!-- JSON Dependency -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20151123</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -51,6 +65,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -62,13 +83,32 @@
             <artifactId>log4j-api</artifactId>
             <version>2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
+        <!--<dependency>-->
+            <!--<groupId>org.awaitility</groupId>-->
+            <!--<artifactId>awaitility</artifactId>-->
+            <!--<version>3.0.0</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.jayway.awaitility</groupId>-->
+            <!--<artifactId>awaitility</artifactId>-->
+            <!--<version>1.4.0</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
 
     </dependencies>
     <build>
         <resources>
             <!-- The following setting is the same as maven default. You do not write it.-->
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>src/main/java</directory>
             </resource>
         </resources>
         <plugins>
@@ -81,7 +121,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass></mainClass>
+                            <mainClass>com.plantronics.NearRealtimeTestClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -94,6 +134,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/src/main/java/com/plantronics/platform/core/ioc/slf4j/*.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -142,6 +191,28 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<version>2.12</version>-->
+                <!--<configuration>-->
+                    <!--<skipTests>false</skipTests>-->
+                    <!--<includes>-->
+                        <!--<include>QDPubNubSubscribeTest.java</include>-->
+                    <!--</includes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <includes>
+                        <include>${runSuite}</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

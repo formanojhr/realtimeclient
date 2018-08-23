@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.plantronics.FastTestSuite" time="21.471" tests="4" errors="0" skipped="0" failures="4">
+  <properties>
+    <property name="idea.version" value="2016.2.5"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib"/>
+    <property name="java.vm.version" value="25.111-b14"/>
+    <property name="gopherProxySet" value="false"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="idea.launcher.port" value="7538"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/cdikshit/Perforce/Git/realtimeclient"/>
+    <property name="java.runtime.version" value="1.8.0_111-b14"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/endorsed"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.io.tmpdir" value="/var/folders/3n/04sfwwr94l39btbfwsyfjw8cfm0l5v/T/"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="classworlds.conf" value="/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/cdikshit/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.13.3"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/cdikshit"/>
+    <property name="user.timezone" value="America/Chicago"/>
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="idea.launcher.bin.path" value="/Applications/IntelliJ IDEA.app/Contents/bin"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="user.name" value="cdikshit"/>
+    <property name="java.class.path" value="/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/boot/plexus-classworlds-2.4.jar:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre"/>
+    <property name="sun.java.command" value="com.intellij.rt.execution.application.AppMain org.codehaus.classworlds.Launcher -Didea.version=2016.2.5 clean install"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.8.0_111"/>
+    <property name="java.ext.dirs" value="/Users/cdikshit/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase name="testPubSub" classname="com.plantronics.QDPubNubSubscribeTest" time="6.098">
+    <failure message="Either msg was not received or was incorrect" type="java.lang.AssertionError">java.lang.AssertionError: Either msg was not received or was incorrect
+	at com.plantronics.QDPubNubSubscribeTest.testPubSub(QDPubNubSubscribeTest.java:176)
+</failure>
+    <system-out><![CDATA[Inside init
+Publish success! Time token: {}15349678452474753
+Category not found. Status:PNAcknowledgmentCategory ErrorData  null
+Category not found. Status:PNConnectedCategory ErrorData  null
+]]></system-out>
+    <system-err><![CDATA[SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/Users/cdikshit/.m2/repository/org/slf4j/slf4j-nop/1.7.21/slf4j-nop-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/Users/cdikshit/.m2/repository/org/slf4j/slf4j-simple/1.7.13/slf4j-simple-1.7.13.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.helpers.NOPLoggerFactory]
+]]></system-err>
+  </testcase>
+  <testcase name="testPubSub" classname="com.plantronics.CallEventPubNubSubscribeTest" time="5.053">
+    <failure message="Either msg was not received or was incorrect" type="java.lang.AssertionError">java.lang.AssertionError: Either msg was not received or was incorrect
+	at com.plantronics.CallEventPubNubSubscribeTest.testPubSub(CallEventPubNubSubscribeTest.java:200)
+</failure>
+    <system-out><![CDATA[Inside init
+Publish success! Time token: {}15349678499156517
+Category not found. Status:PNAcknowledgmentCategory ErrorData  null
+Category not found. Status:PNConnectedCategory ErrorData  null
+]]></system-out>
+  </testcase>
+  <testcase name="testPubSub" classname="com.plantronics.DonOnOffPubNubSubscribeTest" time="5.016">
+    <failure message="Either msg was not received or was incorrect" type="java.lang.AssertionError">java.lang.AssertionError: Either msg was not received or was incorrect
+	at com.plantronics.DonOnOffPubNubSubscribeTest.testPubSub(DonOnOffPubNubSubscribeTest.java:176)
+</failure>
+    <system-out><![CDATA[Inside init
+Category not found. Status:PNConnectedCategory ErrorData  null
+Publish success! Time token: {}15349678550185020
+Category not found. Status:PNAcknowledgmentCategory ErrorData  null
+]]></system-out>
+  </testcase>
+  <testcase name="testPubSub" classname="com.plantronics.MutePubNubSubscribeTest" time="5.017">
+    <failure message="Either msg was not received or was incorrect" type="java.lang.AssertionError">java.lang.AssertionError: Either msg was not received or was incorrect
+	at com.plantronics.MutePubNubSubscribeTest.testPubSub(MutePubNubSubscribeTest.java:176)
+</failure>
+    <system-out><![CDATA[Inside init
+Publish success! Time token: {}15349678600892221
+Category not found. Status:PNAcknowledgmentCategory ErrorData  null
+Category not found. Status:PNConnectedCategory ErrorData  null
+]]></system-out>
+  </testcase>
+</testsuite>

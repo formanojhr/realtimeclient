@@ -1,5 +1,6 @@
 package com.plantronics.impl;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.plantronics.EventPublisher;
 import com.plantronics.monitoring.internal.PerfLogger;
 import com.timgroup.statsd.StatsDClient;
@@ -56,5 +57,14 @@ public class TCPEventPublisher implements EventPublisher {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public void subscribe(String channel){
+
+    }
+
+    @Override
+    public void publish(ObjectNode message, String channel){
+
     }
 }
