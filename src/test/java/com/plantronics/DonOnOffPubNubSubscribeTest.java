@@ -178,7 +178,8 @@ public class DonOnOffPubNubSubscribeTest {
             log.info("message was received and verified! Test Passed !!");
         }
 
-        pubnub.stop();
+        pubnub.unsubscribeAll();
+        pubnub.destroy();
 
         }
 

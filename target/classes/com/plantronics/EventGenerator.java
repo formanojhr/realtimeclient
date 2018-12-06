@@ -1,6 +1,7 @@
 package com.plantronics;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.plantronics.impl.*;
 import com.pubnub.api.PNConfiguration;
@@ -72,6 +73,7 @@ public class EventGenerator implements Runnable {
     private int channelCount;
     private boolean isDeviceEvent;
     private boolean isSoundEvent;
+    private boolean isEEG;
     //private String tenantId;
     private String channelPrefix;
    // private String tenantId+"_pub"=tenantId+"_pub";
@@ -82,11 +84,13 @@ public class EventGenerator implements Runnable {
 
 
 //    private static String channelPrefix="dc560b50-9e20-41b9-a76b-d32ebfbdcd7a_pub";
-   private static String tenantId="777aa081-16c7-4a59-9aa2-1a182965d86d";
-  // private String eventype="QD";
-   private String eventype="DON";
+   private static String tenantId="41a5d843-8a18-4bbd-9e77-351859c96a36";
+//      private String eventype="QD";
+//   private String eventype="DON";
+ private String eventype ="EEG";
 // private String eventype="MUTE";
 //private String eventype="HEADSET";
+//   private String eventype="CD_EVENT";
 
     public EventGenerator(EventPublisher eventPublisher,
                           String profile,
@@ -131,9 +135,10 @@ public class EventGenerator implements Runnable {
                           String listenChannel,
                           String deviceId,
                           String userId,
-                          int timeBetweenEvents, int    channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId) {
+                          int timeBetweenEvents, int    channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId,boolean isEEG) {
         this.eventPublisher = eventPublisher;
         this.isDeviceEvent=isDeviceEvent;
+        this.isEEG=isEEG;
         channelPrefix = tenantId+"_pub";
         //Sound events
         if(isSoundEvent) {
@@ -158,7 +163,7 @@ public class EventGenerator implements Runnable {
         }
 
         //If device events
-        if(isDeviceEvent){
+        if(isDeviceEvent || isEEG){
             deviceEventProfile= new QuickDisconnectEventProfile();
         }
 
@@ -205,6 +210,8 @@ public class EventGenerator implements Runnable {
                     }
                     if(isSoundEvent) {
                         sendSoundEvent();
+                    }if(isEEG) {
+                        sendEEGEvent();
                     }
                 }
 //                sendCallEnd();
@@ -231,18 +238,157 @@ public class EventGenerator implements Runnable {
         product.put("headset", deviceId);
         product.put("base", "YYY");
         position.put("productCode", product);//added complex product
-        position.put(Constants.JSONFieldNames.TIME_STAMP,fmt.print(dt));
+        position.put(Constants.JSONFieldNames.TIME,203.6231);
         position.put("tenantId",tenantId);
 
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append("{");
-//
-//        sb.append("\"version\":\"");
-//        sb.append(version);
-//        sb.append("\",");
+        if(deviceEvent.isConnected()==true) {
+            if(this.eventype.contains("QD")) {
+                position.put("eventType",Constants.JSONFieldNames.QUICK_CONNECT);
+            }
+            else if(this.eventype.contains("MUTE")){
+                position.put("eventType",Constants.JSONFieldNames.MUTE_ON);
+            }else if(this.eventype.contains("DON")){
+                position.put("eventType",Constants.JSONFieldNames.DON_ON);
+            }else if(this.eventype.contains("HEADSET")){
+                position.put("eventType",Constants.JSONFieldNames.USB_CONNECT);
+            }else if(this.eventype.contains("EEG")){
+                position.put("eventType",Constants.JSONFieldNames.EEG_EVENT);
+            }
+        }
+        else{
+            if(this.eventype.contains("QD")) {
+                position.put("eventType",Constants.JSONFieldNames.QUICK_DISCONNECT);
+            }
+            else if(this.eventype.contains("MUTE")){
+                position.put("eventType",Constants.JSONFieldNames.MUTE_OFF);
+            }else if(this.eventype.contains("DON")){
+                position.put("eventType",Constants.JSONFieldNames.DON_OFF);
+            }else if(this.eventype.contains("HEADSET")){
+                position.put("eventType",Constants.JSONFieldNames.USB_DISCONNECT);
+            }else if(this.eventype.contains("EEG")){
+                position.put("eventType",Constants.JSONFieldNames.EEG_EVENT);
+            }
+        }
 
-      //  sb.append("\"eventType\":\"");
+        eventPublisher.publish(position, channelMap.get(deviceId));
+
+        //eventPublisher.publish(sb.toString(), channelMap.get(deviceId));
+        eventPublisher.subscribe(subscribeChannel);
+
+        if(eventPublisher instanceof PubNubEventPublisher) {
+            log.info("published to channel id: " + channelMap.get(deviceId));
+        }
+
+        TimeUnit.SECONDS.sleep(10);
+      //subscribeEvents();
+
+    }
+
+
+    private void sendEEGEvent() throws Exception{
+        deviceId=deviceIdArr.get(r.nextInt(High-Low) + Low);
+        System.out.println("deviceId: "+deviceId);
+        DateTimeFormatter patternFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode position = mapper.createObjectNode();
+        DeviceEvent deviceEvent = deviceEventProfile.generateDeviceEvent(period);
+        ObjectNode product = mapper.createObjectNode();
+        ObjectNode connectionEvent = mapper.createObjectNode();
+        ObjectNode attentionEvent = mapper.createObjectNode();
+        ObjectNode rawEegEvent = mapper.createObjectNode();
+        ObjectNode accelerationEvent = mapper.createObjectNode();
+        ObjectNode batteryEvent = mapper.createObjectNode();
+        ObjectNode contactQualityEvent = mapper.createObjectNode();
+        ObjectNode fftEvent = mapper.createObjectNode();
+        ObjectNode wavebandEvent = mapper.createObjectNode();
+
+//        product.put("headset", deviceId);
+//        product.put("base", "YYY");
+//        position.put("productCode", product);
+        position.put("eventType",Constants.JSONFieldNames.EEG_EVENT);
+
+        ArrayNode nueroEventDetail = mapper.createArrayNode();
+        ObjectNode connectionObject = mapper.createObjectNode();
+
+        connectionObject.put("eventType", "connection");
+        connectionObject.put("headsetId", deviceId);
+        connectionObject.put("rssi", "YYY");
+        connectionEvent.put("event",connectionObject);
+        nueroEventDetail.add(connectionEvent    );
+        ObjectNode attentionObject = mapper.createObjectNode();
+        attentionObject.put("eventType","attention");
+        attentionObject.put("data",0.7004938);
+        attentionEvent.put("event", attentionObject);
+        nueroEventDetail.add(attentionEvent);
+        ObjectNode rawEegObject = mapper.createObjectNode();
+        ArrayNode rawEegArray = mapper.createArrayNode();
+                for(int i = 0; i < 70; i++){
+            rawEegArray.add(random.nextInt(200));
+        }
+        rawEegObject.put("eventType","rawEeg");
+        rawEegObject.put("data", rawEegArray.toString());
+        rawEegEvent.put("event", rawEegObject);
+        nueroEventDetail.add(rawEegEvent);
+        ObjectNode accelerationObject = mapper.createObjectNode();
+        accelerationObject.put("eventType", "acceleration");
+        accelerationObject.put("x",0.009706f);
+        accelerationObject.put("y",0.059114f);
+        accelerationObject.put("z",0.009173f);
+        accelerationEvent.put("event",accelerationObject);
+        nueroEventDetail.add(accelerationEvent);
+        ObjectNode batteryObject = mapper.createObjectNode();
+        batteryObject.put("eventType", "battery");
+        batteryObject.put("data", 0.82975f);
+        batteryEvent.put("event", batteryObject);
+        nueroEventDetail.add(batteryEvent);
+        ObjectNode contactQualityObject = mapper.createObjectNode();
+        contactQualityObject.put("eventType", "contactQuality");
+        contactQualityObject.put("data", 0.8);
+        contactQualityEvent.put("event",contactQualityObject);
+        nueroEventDetail.add(contactQualityEvent);
+        ObjectNode fftObject = mapper.createObjectNode();
+        ArrayNode fftArray = mapper.createArrayNode();
+        ObjectNode fftDataObject = mapper.createObjectNode();
+ //       fftObject.put("eventType", "fft");
+//        for(int i = 1; i <= 64; i++){
+//            String str = Integer.toString(i);
+//            fftDataObject.put(str, random.nextFloat() * 50);
+//        }
+
+        fftObject.put("eventType", "fft");
+        for(int i = 1; i <= 64; i++){
+            fftDataObject.put(Integer.toString(i), random.nextFloat() * 50);
+        }
+        fftObject.put("data", fftDataObject);
+        fftEvent.put("event", fftObject);
+
+      //  fftEvent.put(fftObject);
+ //       events.add(fftEvent);
+
+//        fftObject.put("data", fftDataObject.toString());
+//               for(int i = 0; i < 64; i++){
+//            fftArray.add(random.nextFloat() * 50);
+//        }
+//        fftObject.put("data",fftArray.toString());
+//       fftObject.put("eventType", "fft");
+        nueroEventDetail.add(fftEvent);
+        ObjectNode wavebandObject = mapper.createObjectNode();
+        wavebandObject.put("eventType","waveband");
+        wavebandObject.put("delta", 281.9839);
+        wavebandObject.put("alpha", 35.04805);
+        wavebandObject.put("theta", 91.40916);
+        wavebandObject.put("beta", 66.3606);
+        wavebandEvent.put("event", wavebandObject);
+        nueroEventDetail.add(wavebandEvent);
+
+        position.put(Constants.JSONFieldNames.TIME,203.6231);
+        //position.put("tenantId",tenantId);
+        //position.put("isEEG",true);
+
+        position.put("events", nueroEventDetail.toString());
+
+        System.out.println(position);
+
         if(deviceEvent.isConnected()==true) {
             if(this.eventype.contains("QD")) {
                 //sb.append(Constants.JSONFieldNames.QUICK_CONNECT);
@@ -257,6 +403,9 @@ public class EventGenerator implements Runnable {
             }else if(this.eventype.contains("HEADSET")){
                 //sb.append(Constants.JSONFieldNames.USB_CONNECT);
                 position.put("eventType",Constants.JSONFieldNames.USB_CONNECT);
+            }else if(this.eventype.contains("EEG")){
+                //sb.append(Constants.JSONFieldNames.USB_CONNECT);
+                position.put("eventType",Constants.JSONFieldNames.EEG_EVENT);
             }
         }
         else{
@@ -273,40 +422,11 @@ public class EventGenerator implements Runnable {
             }else if(this.eventype.contains("HEADSET")){
                 //sb.append(Constants.JSONFieldNames.USB_DISCONNECT);
                 position.put("eventType",Constants.JSONFieldNames.USB_DISCONNECT);
+            }else if(this.eventype.contains("EEG")){
+                //sb.append(Constants.JSONFieldNames.USB_CONNECT);
+                position.put("eventType",Constants.JSONFieldNames.EEG_EVENT);
             }
         }
-//        sb.append("\",");
-//        sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
-//        sb.append("\"");
-//        sb.append(fmt.print(dt));
-//        sb.append("\"");
-//        log.debug(Constants.JSONFieldNames.TIME_STAMP+fmt.print(dt));
-//        sb.append(",");
-//
-//        sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
-//        sb.append("\"");
-//        sb.append(new Date().getTime());
-//        sb.append("\"");
-//        log.debug("originTime: "+new Date().getTime());
-//        sb.append(",");
-//
-//        sb.append("\"tenantId\":\"");
-//        sb.append(tenantId);
-//        sb.append("\",");
-//
-//        sb.append("\"productCode\":");
-//        sb.append("{");
-//        sb.append("\"base\":");
-//        sb.append("\"xxxx\"");
-//        sb.append(",");
-//        sb.append("\"headset\":");
-//        sb.append("\"yyyy\"");
-//        sb.append("}");
-//        sb.append(",");
-//        sb.append("\"deviceId\":\"");
-//        sb.append(deviceId);
-////        sb.append("\",");
-//        sb.append("\"}");
 
         eventPublisher.publish(position, channelMap.get(deviceId));
 
@@ -318,7 +438,7 @@ public class EventGenerator implements Runnable {
         }
 
         TimeUnit.SECONDS.sleep(10);
-      //subscribeEvents();
+        //subscribeEvents();
     }
 
     public void setRunning(boolean value) {
@@ -480,85 +600,7 @@ public class EventGenerator implements Runnable {
 
         //add the cd detail event
        position.put(Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT,cdEventDetail);
-
-
-        //add the call event detail event
-//        position.put(Constants.JSONFieldNames.CALL_EVENT,callEventDetail);
-
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append("{");
-//
-//        sb.append("\"version\":\"");
-//        sb.append(version);
-//        sb.append("\",");
-//
-//        sb.append("\"eventType\":\"");
-//        sb.append(Constants.JSONFieldNames.CONVER_DYNAMIC_EVENT);
-//        sb.append("\",");
-//
-////        sb.append("\"eventTime\":");
-//        sb.append("\""+Constants.JSONFieldNames.TIME_STAMP+"\":");
-//        sb.append("\"");
-//        sb.append(fmt.print(dt));
-//        sb.append("\"");
-//        log.debug("TimestamP: "+fmt.print(dt));
-//        sb.append(",");
-//
-//        sb.append("\""+Constants.JSONFieldNames.ORIGIN_TIME+"\":");
-//        sb.append("\"");
-//        sb.append(new Date().getTime());
-//        sb.append("\"");
-//        log.debug("OriginTime: "+new Date().getTime());
-//        sb.append(",");
-//        sb.append("\"productCode\":");
-//        sb.append("{");
-//        sb.append("\"base\":");
-//        sb.append("\"xxxx\"");
-//        sb.append(",");
-//        sb.append("\"headset\":");
-//        sb.append("\"yyyy\"");
-//        sb.append("}");
-//        sb.append(",");
-//        sb.append("\"deviceId\":\"");
-//        sb.append(deviceId);
-//        sb.append("\",");
-//        sb.append("\"tenantId\":\"");
-//        sb.append(tenantId);
-//        sb.append("\",");
-//
-//
-//        sb.append("\""+Constants.JSONFieldNames.PERIOD+"\":");
-//        sb.append(1000);
-//        sb.append(",");
-//
-////        sb.append("\"farEndDuration\":");
-//        sb.append("\""+Constants.JSONFieldNames.FAR_TALK_DURATION+"\":");
-//        sb.append(soundEvent.getFarEndDuration());
-//        sb.append(",");
-//
-////        sb.append("\"nearEndDuration\":");
-//        sb.append("\""+Constants.JSONFieldNames.NEAR_TALK_DURATION+"\":");
-//        sb.append(soundEvent.getNearEndDuration());
-//        sb.append(",");
-//
-////        sb.append("\"overTalkDuration\":");
-//        sb.append("\""+Constants.JSONFieldNames.DOUBLE_TALK_DURATION+"\":");
-//        sb.append(soundEvent.getOverTalkDuration());
-//        sb.append(",");
-//
-//        sb.append("\"noTalkDuration\":");
-//        sb.append(soundEvent.getNoTalkDuration());
-//        sb.append(",");
-//
-//        sb.append("\"farEndMaxDb\":");
-//        sb.append(soundEvent.getFarEndMaxDb());
-//        sb.append(",");
-//
-//        sb.append("\"nearEndMaxDb\":");
-//        sb.append(soundEvent.getNearEndMaxDb());
-//
-//        sb.append("}");
+        System.out.println(position);
 
         eventPublisher.publish(position, channelMap.get(deviceId));
         if(eventPublisher instanceof PubNubEventPublisher) {

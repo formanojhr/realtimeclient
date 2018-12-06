@@ -182,7 +182,8 @@ public class QDPubNubSubscribeTest {
         } else if(receivedMessage && verifiedMsg) {
             log.info("message was received and verified! Test Passed !!");
         }
-            pubnub.stop();
+        pubnub.unsubscribeAll();
+        pubnub.destroy();
     }
 
 //    public void validateMessage(String msg){

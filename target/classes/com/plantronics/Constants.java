@@ -18,6 +18,7 @@ public class Constants {
         //public static final String AVERAGE_HEALTH = "health";
         public static final String HEALTH_ALERT_THRESHOLD="alertThreshold";
         public static final String TIME_STAMP="timeStamp";
+        public static final String TIME="time";
         public static final String ORIGIN_TIME="originTime";
         public static final String IS_CONNECTED="isConnected";
         public static final String PERIOD="periodicity";
@@ -69,6 +70,7 @@ public class Constants {
         public static final String HEADSET_BUTTON_REFECT="HEADSET_BUTTON_REJECT";
         public static final String USB_CONNECT="USB_CONNECT";
         public static final String USB_DISCONNECT="USB_DISCONNECT";
+        public static final String EEG_EVENT="nuero";
     }
 
 }

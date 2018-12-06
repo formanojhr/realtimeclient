@@ -50,8 +50,8 @@ public class NearRealtimeTestClient {
             String deviceId = UUID.randomUUID().toString();
             String userId = UUID.randomUUID().toString();
             //String tenantId = UUID.randomUUID().toString();
-            String tenantId = "777aa081-16c7-4a59-9aa2-1a182965d86d";
-            int timeBetweenEvents = 200;
+            String tenantId = "41a5d843-8a18-4bbd-9e77-351859c96a36";
+            int timeBetweenEvents = 2000;
             int numClients = 1;
 
             String sendWith = "pubnub";
@@ -60,7 +60,8 @@ public class NearRealtimeTestClient {
             int port = 8088;
             int channelCount=4;
             boolean isDeviceEvent=false;
-            boolean isSoundEvent=true;//default sound event
+            boolean isSoundEvent=false;//default sound event
+            boolean isEEG=true;
 
 
             String command = null;
@@ -102,7 +103,9 @@ public class NearRealtimeTestClient {
                             isSoundEvent = Boolean.parseBoolean(args[i]);
                         } else if ("-tenantId".equals(command)) {
                             tenantId = args[i];
-                        }else if ("-help".equals(command)) {
+                        }else if ("-isEEG".equals(command)) {
+                            isEEG = Boolean.parseBoolean(args[i]);
+                        } else if ("-help".equals(command)) {
                             System.out.println("HELP:\n"
                                             + "\n -help    : this menu"
                                             + "\n -user    : user id [Random UUID]"
@@ -240,7 +243,7 @@ public class NearRealtimeTestClient {
                                 listenChannel + "-" + i,
                                 deviceId + "-" + i,
                                 userId + "-" + i,
-                                timeBetweenEvents, channelCount,isDeviceEvent,isSoundEvent,tenantId)
+                                timeBetweenEvents, channelCount,isDeviceEvent,isSoundEvent,tenantId,isEEG)
                 );
             }
 
@@ -262,13 +265,13 @@ public class NearRealtimeTestClient {
             String listenChannel,
             String deviceId,
             String userId,
-            int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId)
+            int timeBetweenEvents, int channelCount,boolean isDeviceEvent, boolean isSoundEvent, String tenantId,boolean isEEG)
 
     {
 
         EventGenerator eventGenerator = null;
         eventGenerator = new EventGenerator(eventPublisher, profile, listenChannel, deviceId, userId,
-                timeBetweenEvents, channelCount,isDeviceEvent, isSoundEvent,tenantId);
+                timeBetweenEvents, channelCount,isDeviceEvent, isSoundEvent,tenantId, isEEG);
 
         Thread eventGeneratorThread = new Thread(eventGenerator);
         try {
